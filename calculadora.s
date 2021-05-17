@@ -41,7 +41,7 @@ loop:
     beq loop
 enter:
     tst r0, #BLUE_KEY_12
-    cmpne r1, #5
+    cmpne r1, #6
     strne r2, [r9, r1, lsl #2]
     addne r1, r1, #1
     movne r3, r2
