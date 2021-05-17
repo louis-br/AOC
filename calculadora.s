@@ -6,7 +6,7 @@
 .equ SWI_CLEAR_DISPLAY, 0x206    @clear LCD
 .equ SWI_CLEAR_LINE,    0x208    @clear a line on LCD
 .equ SWI_EXIT,          0x11     @terminate program
-.equ RIGHT_LED,         0x01     @bit patterns for LED lights
+.equ RIGHT_LED,         0x02     @bit patterns for LED lights
 .equ LEFT_BLACK_BUTTON, 0x02     @bit patterns for black buttons
 .equ BLUE_KEY_00,       1<<0     @button(0)
 .equ BLUE_KEY_01,       1<<1     @button(1)
@@ -35,13 +35,26 @@ start:
     swi SWI_CLEAR_DISPLAY
     b print
 loop:
+    
+clear:
+    
+    swi SWI_CheckBlack
+    tst r0, #1
+    swine SWI_CLEAR_DISPLAY
+    movne r1, #0
+    mov r0, #0
+    movne r2, #0
+    movne r3, #0
+    
+blue:
     swi SWI_CheckBlue   @                                    13    10 9 8   6 5 4   2 1 0
                         @ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 1 1 0 1 1 1 0 1 1 1
-    cmp r0, #0
+    cmpeq r0, #0
     beq loop
+
 enter:
     tst r0, #BLUE_KEY_12
-    cmpne r1, #5
+    cmpne r1, #6
     strne r2, [r9, r1, lsl #2]
     addne r1, r1, #1
     movne r3, r2
@@ -86,6 +99,10 @@ operation:
     bne operation_end
     tst r0, #BLUE_KEY_14 + BLUE_KEY_15
     beq print
+    cmp r2, #0
+    moveq r0, #RIGHT_LED
+    swieq SWI_SETLED
+    beq print
     mov r8, r2
     mov r2, #0
 divide:
@@ -101,11 +118,14 @@ operation_end:
     movmi r1, #0
     ldr r3, [r9, r1, lsl #2]
     swi SWI_CLEAR_LINE
+
 print:
     mov r0, r1
     swi SWI_CLEAR_LINE
     mov r0, #0
     swi SWI_DRAW_INT
+    swi SWI_SETLED
     b loop
+
 exit:    
     swi SWI_EXIT
