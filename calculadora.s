@@ -1,3 +1,8 @@
+@Calculadora RPN
+@Grupo:
+@   Diego Henrique Arenas Okawa     (RA: 2127890)
+@   Louis Brommelstroet     (RA: 2127997)
+
 .data
 .equ SWI_SETLED,        0x201    @LEDs on/off                       
 .equ SWI_CheckBlack,    0x202    @check Black button
@@ -105,7 +110,7 @@ operation:
     tst r0, #BLUE_KEY_14 + BLUE_KEY_15  @Verifica se o botão 14 (tecla do resto) ou o botão 15 (tecla da divisao) foram pressionadas
     beq print                           @Se nao, atualiza a tela
     cmp r2, #0                          @Verifica se o ultimo valor é igual a 0
-    moveq r0, #RIGHT_LED                @Se sim, Armazena o valor do LED direito como parametro em r0
+    moveq r0, #RIGHT_LED                @Se sim, armazena o valor do LED direito como parametro em r0
     swieq SWI_SETLED                    @Se sim, acende o LED direito (02 nesta versao do ARMSIM) 
     beq print                           @Se sim, atualiza a tela
     mov r8, r2                          @Copia o divisor (r2) para r8
